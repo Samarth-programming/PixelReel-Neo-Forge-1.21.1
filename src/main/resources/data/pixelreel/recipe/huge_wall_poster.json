@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"PP",
+		"PP"
+	],
+	"key": {
+		"P": {
+			"item": "pixelreel:wall_poster"
+		}
+	},
+	"result": {
+		"id": "pixelreel:huge_wall_poster",
+		"count": 1
+	}
+}

@@ -1,0 +1,24 @@
+{
+    "type":  "minecraft:crafting_shaped",
+    "category":  "misc",
+    "pattern":  [
+                    "WWW",
+                    "WRW",
+                    "GGG"
+                ],
+    "key":  {
+                "W":  {
+                          "item":  "minecraft:white_wool"
+                      },
+                "R":  {
+                          "item":  "minecraft:redstone_block"
+                      },
+                "G":  {
+                          "item":  "minecraft:gold_ingot"
+                      }
+            },
+    "result":  {
+                   "id":  "pixelreel:giant_cinema_screen",
+                   "count":  1
+               }
+}
