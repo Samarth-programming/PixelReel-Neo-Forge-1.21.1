@@ -21,9 +21,11 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 /**
  * Draws hung poster artwork. Geometry is built facing north and then yaw-rotated the same way the
@@ -216,6 +218,17 @@ public class WallPosterRenderer implements BlockEntityRenderer<WallPosterBlockEn
 	public boolean shouldRenderOffScreen(WallPosterBlockEntity blockEntity) {
 		// The anchor sits in the bottom-left cell, so most of the artwork lives outside its own block bounds.
 		return true;
+	}
+
+	@Override
+	public AABB getRenderBoundingBox(WallPosterBlockEntity blockEntity) {
+		BlockState state = blockEntity.getBlockState();
+		Direction facing = blockEntity.facing();
+		BlockPos anchor = blockEntity.getBlockPos();
+		int width = Math.max(1, WallPosterBlock.hungWidth(state));
+		int height = Math.max(1, WallPosterBlock.hungHeight(state));
+		BlockPos far = PosterLayout.cellPos(anchor, facing, width - 1, height - 1);
+		return new AABB(anchor).minmax(new AABB(far)).inflate(0.25);
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import com.pixelreel.PixelReel;
 import com.pixelreel.blockentities.DisplayBlockEntity;
 import com.pixelreel.blocks.DisplayBlock;
 import com.pixelreel.blocks.DisplayType;
+import com.pixelreel.blocks.ScreenShapes;
 import com.pixelreel.client.playback.PlaybackManager;
 import com.pixelreel.client.playback.PlaybackStatus;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -14,8 +15,10 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.AABB;
 
 /** this is the what the screen looks like this is pretty cool i know */
 
@@ -270,8 +273,23 @@ public class DisplayBlockEntityRenderer implements BlockEntityRenderer<DisplayBl
 	}
 
 	@Override
+	public AABB getRenderBoundingBox(DisplayBlockEntity blockEntity) {
+		return screenBounds(blockEntity.getBlockPos(), blockEntity.type(), blockEntity.facing());
+	}
+
+	@Override
 	public int getViewDistance() {
 		return 128;
+	}
+
+	/** The picture is drawn from the controller across every panel, so culling must use that whole volume. */
+	private static AABB screenBounds(BlockPos origin, DisplayType type, Direction facing) {
+		AABB bounds = new AABB(origin);
+		for (ScreenShapes.Cell cell : ScreenShapes.cells(type)) {
+			bounds = bounds.minmax(new AABB(ScreenShapes.cellPos(origin, type, facing, cell)));
+		}
+		float extra = Math.max(0.5F, (type.curveDepth() + Math.abs(BACK_FACE_BIAS) + PICTURE_BIAS) * PIXEL);
+		return bounds.inflate(extra);
 	}
 
 	private record Sheet(float left, float bottom, float right, float top) {

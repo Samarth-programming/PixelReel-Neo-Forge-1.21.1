@@ -115,37 +115,36 @@ neoForge {
 // "optional", meaning it will not be pulled by dependents of this mod.
 configurations {
     runtimeClasspath.extendsFrom localRuntime
+    jarJar {
+        exclude group: "net.java.dev.jna"
+    }
 }
 
 dependencies {
-    // vlcj is bundled in the published jar. On 1.21.1 it must also be on
-    // additionalRuntimeClasspath or userdev runs never load the library.
-    jarJar(implementation("uk.co.caprica:vlcj:${vlcj_version}")) {
+    // Bundle vlcj inside the mod jar. Do not bundle JNA: Minecraft already
+    // ships com.sun.jna / com.sun.jna.platform, and a second copy crashes
+    // ModLauncher with "reads more than one module named com.sun.jna.platform".
+    // On 1.21.1, non-mod libraries also need additionalRuntimeClasspath for userdev.
+    jarJar(implementation("uk.co.caprica:vlcj:${vlcj_version}") {
+        exclude group: "net.java.dev.jna"
+    }) {
         version {
             strictly "[${vlcj_version},5.0.0)"
             prefer vlcj_version
         }
     }
-    jarJar(implementation("uk.co.caprica:vlcj-natives:${vlcj_natives_version}")) {
+    jarJar(implementation("uk.co.caprica:vlcj-natives:${vlcj_natives_version}") {
+        exclude group: "net.java.dev.jna"
+    }) {
         version {
             strictly "[${vlcj_natives_version},5.0.0)"
             prefer vlcj_natives_version
         }
     }
-    jarJar(implementation("net.java.dev.jna:jna:${jna_version}")) {
-        version {
-            strictly "[${jna_version},6.0.0)"
-            prefer jna_version
-        }
-    }
-    jarJar(implementation("net.java.dev.jna:jna-platform:${jna_version}")) {
-        version {
-            strictly "[${jna_version},6.0.0)"
-            prefer jna_version
-        }
-    }
 
-    additionalRuntimeClasspath "uk.co.caprica:vlcj:${vlcj_version}"
+    additionalRuntimeClasspath("uk.co.caprica:vlcj:${vlcj_version}") {
+        exclude group: "net.java.dev.jna"
+    }
     additionalRuntimeClasspath "uk.co.caprica:vlcj-natives:${vlcj_natives_version}"
 }
 
